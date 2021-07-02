@@ -1,0 +1,52 @@
+﻿
+@model FilmViewModel
+    <a class="btn btn-light btn-sm" asp-action="Index">Вернутся к каталогу фильмов</a>
+
+
+
+<div class="alert"></div>
+<form asp-controller="Home" asp-action="Create" method="post" style="margin-top: 1em;" enctype="multipart/form-data">
+    <h3>Добавление фильма</h3>
+    <div class="form-row">
+        <div class="form-group col-md-4 col-sm-6 col-12">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4 col-sm-6 col-12">
+            <label asp-for="Director"></label>
+            <input asp-for="Director" class="form-control">
+            <span asp-validation-for="Director" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4 col-sm-6 col-12">
+            <label asp-for="Year"></label>
+            <input asp-for="Year" class="form-control">
+            <span asp-validation-for="Year" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4 col-sm-6 col-12">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4 col-sm-6 col-12">
+            <label asp-for="Poster"></label>
+            <div class="input-group">
+                <div class="custom-file">
+                    <input asp-for="Poster" class="custom-file-input" accept=".jpg" id="myInput">
+                    <label class="custom-file-label" for="myInput">Выберите изображение</label>
+                </div>
+            </div>
+            <span asp-validation-for="Poster" class="text-danger"></span>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-outline-primary">Добавить</button>
+</form>
+

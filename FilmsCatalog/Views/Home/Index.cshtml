@@ -1,0 +1,67 @@
+﻿@model IEnumerable<FilmsCatalog.Models.FilmViewModel>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        <a class="btn btn-primary" asp-action="Create">Добавить фильм</a>
+    </p>
+}
+
+<table id="films-table" class="table table-striped">
+    <thead>
+        <tr>
+            <th class="film-name">
+                @Html.DisplayNameFor(p => p.Name)
+            </th>
+            <th class="film-director">
+                @Html.DisplayNameFor(p => p.Director)
+            </th>
+            <th class="film-year">
+                @Html.DisplayNameFor(p => p.Year)
+            </th>
+            <th class="film-description">
+                @Html.DisplayNameFor(p => p.Description)
+            </th>
+            <th class="film-manage"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Detail" asp-route-id="@item.Id">@item.Name</a>
+                </td>
+                <td>
+                    @item.Director
+                </td>
+                <td>
+                    @item.Year
+                </td>
+                <td>
+                    @item.Description
+                </td>
+                <td class="manage-col btn-group-vertical">
+                    @if (item.IsAuthor)
+                    {
+                        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Изменить</a>
+                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+@Html.PagedListPager((IPagedList)Model, page =>
+    Url.Action("Index", new { page = page }),
+    new PagedListRenderOptions
+    {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" }
+    })

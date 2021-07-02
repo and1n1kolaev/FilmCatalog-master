@@ -1,0 +1,58 @@
+﻿@model FilmViewModel
+
+
+<div class="container" >
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-light btn-sm" asp-action="Index">Вернутся к каталогу фильмов</a>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 1em;">
+        <div class="col col-lg-4">
+            <img src="@Url.Action("GetImage", "Home", new { fileName = Model.FileName })" alt="Постер отсутствует" class="img-fluid">
+        </div>
+        <div class="col">
+            <div class="form-row">
+                <div class="col-12">
+                    <label class="font-weight-bold" asp-for="Name"></label>
+                    <p>@Model.Name</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-12">
+                    <label class="font-weight-bold" asp-for="Director"></label>
+                    <p>@Model.Director</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-12">
+                    <label class="font-weight-bold" asp-for="Year"></label>
+                    <p>@Model.Year</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-12">
+                    <label class="font-weight-bold" asp-for="Description"></label>
+                    <p>@Model.Description</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 1em;">
+        <div class="col">
+            @if (Model.IsAuthor)
+            {
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Управление
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id">Изменить</a>
+                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>

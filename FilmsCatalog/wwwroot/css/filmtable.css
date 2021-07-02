@@ -1,0 +1,17 @@
+﻿#films-table th.film-name{
+    width: 10%;
+}
+
+#films-table th.film-director {
+    width: 10%;
+}
+
+#films-table th.film-year {
+    width: 5%;
+}
+
+
+#films-table th.film-manage {
+    width: 100px;
+}
+
