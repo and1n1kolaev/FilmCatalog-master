@@ -4,6 +4,7 @@ using FilmsCatalog.Data.Entities;
 using FilmsCatalog.Models;
 using FilmsCatalog.Repositories;
 using FilmsCatalog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ namespace FilmsCatalog.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IFilmRepository _repository;
 
+     
         public HomeController(ILogger<HomeController> logger,IToastifyService notifyService, 
             IFileManager fileManager, IFilmRepository repository)
         {
@@ -31,6 +33,7 @@ namespace FilmsCatalog.Controllers
             _fileManager = fileManager;
             _logger = logger;
         }
+
 
         public IActionResult Index(int page = 1, int pageSize = 10)
         {
@@ -77,17 +80,22 @@ namespace FilmsCatalog.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Create()
         {     
             return View(new FilmViewModel());
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public IActionResult Create(FilmViewModel model)
         {
             try
             {
+                if (model.Poster is null)
+                    ModelState.AddModelError("Poster", "Файл не указан");
+
                 if (!ModelState.IsValid)
                     return View(model);
 
@@ -128,6 +136,7 @@ namespace FilmsCatalog.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public IActionResult Edit(Guid id)
         {
             var film = _repository.Find(id);
@@ -136,7 +145,7 @@ namespace FilmsCatalog.Controllers
 
             var user = User.Identity.Name;
             if (film.User != user)
-                return Error();
+                return Forbid();
 
             var model = new FilmViewModel()
             {
@@ -155,17 +164,36 @@ namespace FilmsCatalog.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(FilmViewModel model)
         {
             try
             {
+                if (model.Poster is null && model.FileName is null)
+                    ModelState.AddModelError("Poster", "Файл не указан");
+
                 if (!ModelState.IsValid)
                     return View(model);
+
+                var film = _repository.Find(model.Id);
+                if (film is null)
+                {
+                    _logger.LogError("Фильм не найден");
+                    _notifyService.Error("Фильм не найден");
+                    return RedirectToAction("Index");
+                }
+              
+                var user = User.Identity.Name;
+                if (model.User != user)
+                    return Forbid();
 
                 string filePath = string.Empty;
                 if (model.Poster is not null)
                 {
+                    if (model.FileName is not null)
+                        _fileManager.Delete(model.FileName);
+
                     filePath = _fileManager.Save(model.Poster);
                     if (filePath is null)
                     {
@@ -179,18 +207,13 @@ namespace FilmsCatalog.Controllers
                     filePath = model.FileName;
                 }
 
-                var user = User.Identity.Name;
-                var film = new Film()
-                {
-                    Id = model.Id,
-                    Name = model.Name,
-                    Director = model.Director,
-                    Description = model.Description,
-                    Year = model.Year,
-                    FilePath = filePath,
-                    User = user
-                };
-
+                film.Name = model.Name;
+                film.Director = model.Director;
+                film.Description = model.Description;
+                film.Year = model.Year;
+                film.FilePath = filePath;
+                film.User = user;
+                
                 _repository.Update(film);
                 _notifyService.Success("Успешно сохранено!");
 
@@ -203,12 +226,26 @@ namespace FilmsCatalog.Controllers
             return View(model);
         }
 
-        [HttpGet]
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(Guid id)
         {
             try
             {
-                var film = _repository.Remove(id);
+                var film = _repository.Find(id);
+                if (film is null)
+                {
+                    _logger.LogError("Фильм не найден");
+                    _notifyService.Error("Фильм не найден");
+                    return RedirectToAction("Index");
+                }
+
+                var user = User.Identity.Name;
+                if (film.User != user)
+                    return Forbid();
+
+                film = _repository.Remove(id);
                 _fileManager.Delete(film.FilePath);
                 _notifyService.Success("Успешно удалено!");
             }
@@ -224,10 +261,24 @@ namespace FilmsCatalog.Controllers
         [HttpGet]
         public IActionResult GetImage(string fileName)
         {
+            try
+            {
+                if (fileName is null)
+                    return NoContent();
 
-            var image = _fileManager.Get(fileName);
+                var image = _fileManager.Get(fileName);
+                if (image is null)
+                    return NoContent();
 
-            return File(image, "image/jpeg");
+                return File(image, "image/jpeg");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Ошибка получения изображения");
+                return Error();
+            }
+
+            
         }
 
 

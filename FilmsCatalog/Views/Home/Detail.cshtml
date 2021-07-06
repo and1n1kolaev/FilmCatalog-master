@@ -42,15 +42,15 @@
         <div class="col">
             @if (Model.IsAuthor)
             {
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Управление
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id">Изменить</a>
-                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
-                    </div>
-                </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Управление
+                </button>
+                <form class="dropdown-menu" asp-controller="Home" method="post">
+                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id">Изменить</a>
+                    <input class="dropdown-item" asp-action="Delete" type="submit" asp-route-id="@Model.Id" value="Удалить" />
+                </form>
+            </div>
             }
         </div>
 

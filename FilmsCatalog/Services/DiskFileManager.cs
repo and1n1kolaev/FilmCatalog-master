@@ -51,10 +51,9 @@ namespace FilmsCatalog.Services
                     throw new ArgumentNullException(nameof(fileName));
 
                 string path = Path.Combine(_folderPath, fileName);
-                File.Delete(path);
-
-                if (!File.Exists(path))
-                    return true;
+                if (File.Exists(path))
+                    File.Delete(path);   
+                
             }
             catch (Exception ex)
             {
@@ -62,7 +61,7 @@ namespace FilmsCatalog.Services
                 throw;
             }
 
-            return false;
+            return true;
         }
 
         public byte[] Get(string fileName)

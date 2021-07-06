@@ -28,6 +28,7 @@ namespace FilmsCatalog.Models
         public string User { get; set; }
         public string FileName { get; set; }
         [Display(Name = "Постер")]
+        [AllowedExtensions(new string[] { ".jpg" })]
         public IFormFile Poster { get; set; }
     }
 }

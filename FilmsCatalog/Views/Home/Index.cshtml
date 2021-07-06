@@ -45,11 +45,13 @@
                 <td>
                     @item.Description
                 </td>
-                <td class="manage-col btn-group-vertical">
+                <td>
                     @if (item.IsAuthor)
                     {
-                        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Изменить</a>
-                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                        <form class="manage-col btn-group-vertical" asp-controller="Home" method="post">
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Изменить</a>
+                            <input class="btn btn-danger btn-sm" asp-action="Delete" type="submit" asp-route-id="@item.Id" value="Удалить" />
+                        </form>
                     }
                 </td>
             </tr>
